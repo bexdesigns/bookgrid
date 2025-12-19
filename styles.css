@@ -207,11 +207,24 @@ button:active {
   right: 14px;
   bottom: 14px;
   z-index: 9999;
-  display: none;
 }
 
-.screenshot-mode .floating-toggle {
-  display: block;
+.floating-toggle[hidden] {
+  display: none !important;
+}
+
+
+.capture {
+  /* This is what you want to screenshot */
+}
+
+.below-tip {
+  max-width: 980px;
+  margin: 10px auto 18px;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
 }
 
 
