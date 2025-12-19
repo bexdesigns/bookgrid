@@ -1,7 +1,6 @@
 const fetchBtn = document.getElementById("fetchBtn");
 const clearBtn = document.getElementById("clearBtn");
-const screenshotModeBtn = document.getElementById("screenshotModeBtn");
-const exitScreenshotBtn = document.getElementById("exitScreenshotBtn");
+
 
 const bookListEl = document.getElementById("bookList");
 const gridEl = document.getElementById("grid");
@@ -121,7 +120,7 @@ async function handleFetch() {
     }
   }
 
-  statusText.textContent = `Done! Drag to reorder. Use Screenshot Mode for a clean capture.`;
+  statusText.textContent = `Done! Drag to reorder.`;
 }
 
 function handleClear() {
@@ -141,39 +140,3 @@ bookListEl.addEventListener("keydown", (e) => {
   }
 });
 
-// --- Screenshot Mode toggle ---
-const floatingToggle = document.getElementById("floatingToggle");
-const exitScreenshotBtn = document.getElementById("exitScreenshotBtn");
-
-function setScreenshotMode(isOn) {
-  document.body.classList.toggle("screenshot-mode", isOn);
-
-  // Update the main button if it exists
-  if (screenshotModeBtn) {
-    screenshotModeBtn.setAttribute("aria-pressed", String(isOn));
-    screenshotModeBtn.textContent = isOn ? "Exit Screenshot Mode" : "Screenshot Mode";
-  }
-
-  // Show/hide the floating exit control
-  if (floatingToggle) {
-    floatingToggle.hidden = !isOn;
-  }
-}
-
-// Enter/exit via the main button
-screenshotModeBtn.addEventListener("click", () => {
-  const isOn = !document.body.classList.contains("screenshot-mode");
-  setScreenshotMode(isOn);
-});
-
-// Exit via floating button (always visible in screenshot mode)
-exitScreenshotBtn.addEventListener("click", () => {
-  setScreenshotMode(false);
-});
-
-// Optional: Esc key exits screenshot mode on desktop
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && document.body.classList.contains("screenshot-mode")) {
-    setScreenshotMode(false);
-  }
-});
