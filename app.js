@@ -1,6 +1,7 @@
 const fetchBtn = document.getElementById("fetchBtn");
 const clearBtn = document.getElementById("clearBtn");
 const screenshotModeBtn = document.getElementById("screenshotModeBtn");
+const exitScreenshotBtn = document.getElementById("exitScreenshotBtn");
 
 const bookListEl = document.getElementById("bookList");
 const gridEl = document.getElementById("grid");
@@ -146,3 +147,19 @@ screenshotModeBtn.addEventListener("click", () => {
   screenshotModeBtn.setAttribute("aria-pressed", String(isOn));
   screenshotModeBtn.textContent = isOn ? "Exit Screenshot Mode" : "Screenshot Mode";
 });
+
+function setScreenshotMode(isOn) {
+  document.body.classList.toggle("screenshot-mode", isOn);
+  screenshotModeBtn.setAttribute("aria-pressed", String(isOn));
+  screenshotModeBtn.textContent = isOn ? "Exit Screenshot Mode" : "Screenshot Mode";
+}
+
+screenshotModeBtn.addEventListener("click", () => {
+  const isOn = !document.body.classList.contains("screenshot-mode");
+  setScreenshotMode(isOn);
+});
+
+exitScreenshotBtn.addEventListener("click", () => {
+  setScreenshotMode(false);
+});
+
