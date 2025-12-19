@@ -201,6 +201,20 @@ button:active {
   display: none;
 }
 
+/* A tiny floating control bar that stays visible in Screenshot Mode */
+.floating-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 9999;
+  display: none;
+}
+
+.screenshot-mode .floating-toggle {
+  display: block;
+}
+
+
 .footer {
   text-align: center;
   color: var(--muted);
