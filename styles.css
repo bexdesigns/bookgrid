@@ -194,25 +194,55 @@ button:active {
   .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
 }
 
-/* Screenshot Mode: hides the control panel */
-.screenshot-mode .panel,
-.screenshot-mode .header,
-.screenshot-mode .footer {
-  display: none;
+/* The outer area */
+.story-area {
+  background: transparent;              /* let the frame be the “white” */
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
-/* A tiny floating control bar that stays visible in Screenshot Mode */
-.floating-toggle {
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 9999;
+/* The white “mat” frame users will crop to */
+.frame {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px;                        /* <-- THIS is the “expanded white border” */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  border: 1px solid rgba(17,24,39,0.06);
 }
 
-.floating-toggle[hidden] {
-  display: none !important;
+/* Optional: extra inner padding so covers never feel too close to edge */
+@media (max-width: 480px) {
+  .frame { padding: 22px; }
 }
 
+/* Grid stays the same idea */
+.grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  justify-items: center;
+}
+
+/* Tip below grid (not inside the crop frame) */
+.below-tip {
+  margin: 10px 0 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* Responsive columns (optional tweak) */
+@media (min-width: 520px) {
+  .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (min-width: 720px) {
+  .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (min-width: 980px) {
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+}
 
 .capture {
   /* This is what you want to screenshot */
