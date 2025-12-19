@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BookGrid — Book Cover Grid Maker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Paste a list of books, find covers, reorder, and screenshot a clean grid for Instagram stories." />
+<title>Book Cover Grid Maker for Instagram Stories</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <header class="header">
+    <h1>BookGrid</h1>
+    <p class="description">
+      Turn your 2025 reading list into an image-only bookshelf grid. Find covers, drag to reorder, then screenshot and share.
+    </p>
+  </header>
+
+  <main class="app">
+    <section class="panel" id="controlsPanel">
+      <label for="bookList">Paste your book list (one per line)</label>
+      <textarea id="bookList" placeholder="Example:
+Nothing to See Here by Kevin Wilson
+Atmosphere by Taylor Jenkins Reid
+The History of Sound by Ben Shattuck"></textarea>
+
+      <div class="controls">
+        <button class="primary" id="fetchBtn">Find Covers</button>
+        <button class="secondary" id="clearBtn">Clear</button>
+        <button class="secondary" id="screenshotModeBtn" aria-pressed="false">Screenshot Mode</button>
+      </div>
+
+      <div class="status" id="statusText">
+        Paste titles with optional authors. Tap <strong>Find Covers</strong>, drag to reorder, then screenshot.
+      </div>
+
+      <div class="error" id="errorText"></div>
+    </section>
+
+    <section class="story-area" aria-label="Book cover grid">
+      <div class="grid" id="grid"></div>
+
+      <div class="export-controls">
+        <!-- Web version: keep this as "How to save" rather than PNG export (CORS makes it unreliable) -->
+        <div class="hint" id="saveHint">
+          Tip: Turn on <strong>Screenshot Mode</strong> for a clean capture.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Made for Bookstagram </span>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
