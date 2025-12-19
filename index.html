@@ -28,7 +28,6 @@ The History of Sound by Ben Shattuck"></textarea>
       <div class="controls">
         <button class="primary" id="fetchBtn">Find Covers</button>
         <button class="secondary" id="clearBtn">Clear</button>
-        <button class="secondary" id="screenshotModeBtn" aria-pressed="false">Screenshot Mode</button>
       </div>
 
       <div class="status" id="statusText">
@@ -38,16 +37,16 @@ The History of Sound by Ben Shattuck"></textarea>
       <div class="error" id="errorText"></div>
     </section>
 
+    <!-- BOOK GRID capture area -->
    <section class="story-area" aria-label="Book cover grid">
-  <!-- Capture area -->
-  <div class="capture" id="captureArea">
+  <div class="frame" id="frame">
     <div class="grid" id="grid"></div>
   </div>
-</section>
 
-<!-- Tip is now OUTSIDE capture area -->
+
+<!-- OUTSIDE capture area -->
 <div class="below-tip" id="saveHint">
-  Tip: Turn on <strong>Screenshot Mode</strong> for a clean capture.
+    Tip: Take a screenshot, then crop. 
 </div>
 
   </main>
