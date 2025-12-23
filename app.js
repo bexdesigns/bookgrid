@@ -1,142 +1,187 @@
-const fetchBtn = document.getElementById("fetchBtn");
-const clearBtn = document.getElementById("clearBtn");
+// ===== BOOKGRID APPLICATION =====
 
+const bookInput = document.getElementById('bookInput');
+const customTitleInput = document.getElementById('customTitle');
+const generateBtn = document.getElementById('generateBtn');
+const progress = document.getElementById('progress');
+const outputSection = document.getElementById('outputSection');
+const bookGrid = document.getElementById('bookGrid');
+const gridTitle = document.getElementById('gridTitle');
 
-const bookListEl = document.getElementById("bookList");
-const gridEl = document.getElementById("grid");
+const CACHE_KEY = 'bookgrid_cache';
+const TITLE_KEY = 'bookgrid_custom_title';
 
-const statusText = document.getElementById("statusText");
-const errorText = document.getElementById("errorText");
-
-let dragSrcEl = null;
-
-// --- Google Books cover fetch (with lightweight caching) ---
-function cacheKey(query) {
-  return `bookgrid_cover_${query.toLowerCase()}`;
+// Load cached custom title
+const savedTitle = localStorage.getItem(TITLE_KEY);
+if (savedTitle) {
+  customTitleInput.value = savedTitle;
 }
 
-async function fetchCover(query) {
-  const cached = localStorage.getItem(cacheKey(query));
-  if (cached) return { thumbnail: cached };
-
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=1`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Network error");
-  const data = await res.json();
-
-  const item = data.items && data.items[0] ? data.items[0] : null;
-  const vol = item ? item.volumeInfo || {} : {};
-  const images = vol.imageLinks || {};
-
-  const thumb = images.thumbnail || images.smallThumbnail || null;
-  if (thumb) localStorage.setItem(cacheKey(query), thumb);
-
-  return { thumbnail: thumb };
-}
-
-// --- Drag & drop reordering ---
-function handleDragStart(e) {
-  dragSrcEl = this;
-  this.classList.add("dragging");
-  e.dataTransfer.effectAllowed = "move";
-}
-
-function handleDragEnd() {
-  this.classList.remove("dragging");
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
-
-  const target = e.target.closest(".book");
-  if (!target || target === dragSrcEl) return;
-
-  const books = Array.from(gridEl.children);
-  const srcIndex = books.indexOf(dragSrcEl);
-  const tgtIndex = books.indexOf(target);
-
-  if (srcIndex < tgtIndex) {
-    gridEl.insertBefore(dragSrcEl, target.nextSibling);
+// Save custom title on input
+customTitleInput.addEventListener('input', () => {
+  const title = customTitleInput.value.trim();
+  if (title) {
+    localStorage.setItem(TITLE_KEY, title);
   } else {
-    gridEl.insertBefore(dragSrcEl, target);
-  }
-}
-
-function makeDraggable(el) {
-  el.setAttribute("draggable", "true");
-  el.addEventListener("dragstart", handleDragStart);
-  el.addEventListener("dragend", handleDragEnd);
-}
-
-gridEl.addEventListener("dragover", handleDragOver);
-
-function createBookElement(result) {
-  const div = document.createElement("div");
-  div.className = "book";
-
-  if (result.thumbnail) {
-    const img = document.createElement("img");
-    img.src = result.thumbnail;
-    img.alt = "";
-    div.appendChild(img);
-  }
-
-  makeDraggable(div);
-  return div;
-}
-
-// --- Fetch handler with progress ---
-async function handleFetch() {
-  errorText.textContent = "";
-  gridEl.innerHTML = "";
-
-  const raw = bookListEl.value.trim();
-  if (!raw) {
-    errorText.textContent = "Please paste at least one book title.";
-    return;
-  }
-
-  const lines = raw
-    .split("\n")
-    .map(l => l.trim())
-    .filter(Boolean);
-
-  const total = lines.length;
-  let done = 0;
-
-  statusText.textContent = `Fetching covers… (0/${total})`;
-
-  for (const line of lines) {
-    try {
-      const result = await fetchCover(line);
-      gridEl.appendChild(createBookElement(result));
-    } catch (e) {
-      console.error("Fetch error", e);
-      gridEl.appendChild(createBookElement({ thumbnail: null }));
-    } finally {
-      done += 1;
-      statusText.textContent = `Fetching covers… (${done}/${total})`;
-    }
-  }
-
-  statusText.textContent = `Done! Drag to reorder.`;
-}
-
-function handleClear() {
-  bookListEl.value = "";
-  gridEl.innerHTML = "";
-  statusText.innerHTML = `Paste titles with optional authors. Tap <strong>Find Covers</strong>, drag to reorder, then screenshot.`;
-  errorText.textContent = "";
-}
-
-fetchBtn.addEventListener("click", handleFetch);
-clearBtn.addEventListener("click", handleClear);
-
-bookListEl.addEventListener("keydown", (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-    e.preventDefault();
-    handleFetch();
+    localStorage.removeItem(TITLE_KEY);
   }
 });
 
+// Get cached covers
+function getCache() {
+  try {
+    const cache = localStorage.getItem(CACHE_KEY);
+    return cache ? JSON.parse(cache) : {};
+  } catch {
+    return {};
+  }
+}
+
+// Save to cache
+function saveToCache(query, imageUrl) {
+  try {
+    const cache = getCache();
+    cache[query.toLowerCase()] = imageUrl;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  } catch (e) {
+    console.warn('Cache save failed:', e);
+  }
+}
+
+// Fetch book cover from Google Books API
+async function fetchBookCover(query) {
+  const cache = getCache();
+  const cacheKey = query.toLowerCase();
+  
+  // Check cache first
+  if (cache[cacheKey]) {
+    return cache[cacheKey];
+  }
+  
+  try {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=1`;
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    if (data.items && data.items[0]) {
+      const book = data.items[0].volumeInfo;
+      const imageUrl = book.imageLinks?.thumbnail || book.imageLinks?.smallThumbnail;
+      
+      if (imageUrl) {
+        // Use HTTPS
+        const secureUrl = imageUrl.replace('http://', 'https://');
+        saveToCache(query, secureUrl);
+        return secureUrl;
+      }
+    }
+  } catch (e) {
+    console.error('API error for:', query, e);
+  }
+  
+  return null;
+}
+
+// Create book cover element
+function createBookCover(imageUrl, title) {
+  const div = document.createElement('div');
+  div.className = 'book-cover';
+  
+  if (imageUrl) {
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = title;
+    div.appendChild(img);
+  } else {
+    div.classList.add('placeholder');
+    div.textContent = 'No cover found';
+  }
+  
+  return div;
+}
+
+// Initialize SortableJS
+function initializeSortable() {
+  new Sortable(bookGrid, {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    forceFallback: true, // Better mobile support
+    touchStartThreshold: 5
+  });
+}
+
+// Generate grid
+async function generateGrid() {
+  const input = bookInput.value.trim();
+  
+  if (!input) {
+    alert('Please paste your book list first!');
+    return;
+  }
+  
+  // Parse books
+  const books = input.split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+  
+  if (books.length === 0) {
+    alert('Please enter at least one book!');
+    return;
+  }
+  
+  // Clear previous grid
+  bookGrid.innerHTML = '';
+  outputSection.classList.remove('active');
+  
+  // Update custom title
+  const customTitle = customTitleInput.value.trim();
+  if (customTitle) {
+    gridTitle.textContent = customTitle;
+    gridTitle.classList.add('active');
+  } else {
+    gridTitle.classList.remove('active');
+  }
+  
+  // Disable button and show progress
+  generateBtn.disabled = true;
+  progress.classList.add('active');
+  progress.textContent = `Fetching covers... (0/${books.length})`;
+  
+  // Fetch covers sequentially
+  for (let i = 0; i < books.length; i++) {
+    const book = books[i];
+    progress.textContent = `Fetching covers... (${i + 1}/${books.length})`;
+    
+    const imageUrl = await fetchBookCover(book);
+    const coverElement = createBookCover(imageUrl, book);
+    bookGrid.appendChild(coverElement);
+    
+    // Small delay to avoid rate limiting
+    if (i < books.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+  }
+  
+  // Show output
+  progress.classList.remove('active');
+  generateBtn.disabled = false;
+  outputSection.classList.add('active');
+  
+  // Initialize drag-and-drop
+  initializeSortable();
+  
+  // Scroll to grid
+  setTimeout(() => {
+    outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// Event listener
+generateBtn.addEventListener('click', generateGrid);
+
+// Allow Enter key in textarea (optional: Ctrl+Enter to generate)
+bookInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    generateGrid();
+  }
+});
