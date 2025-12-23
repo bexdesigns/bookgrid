@@ -1,68 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>BookGrid — Book Cover Grid Maker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Paste a list of books, find covers, reorder, and screenshot a clean grid for Instagram stories." />
-<title>Book Cover Grid Maker for Instagram Stories</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookGrid: Turn Your Reading List Into a Visual Grid for Instagramr</title>
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- SortableJS for drag-and-drop -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </head>
-
 <body>
-  <header class="header">
-    <h1>BookGrid</h1>
-    <p class="description">
-      Turn your 2025 reading list into an image-only bookshelf grid. Find covers, drag to reorder, then screenshot and share.
-    </p>
-  </header>
-
-  <main class="app">
-    <section class="panel" id="controlsPanel">
-      <label for="bookList">Paste your book list (one per line)</label>
-      <textarea id="bookList" placeholder="Example:
+  <div class="container">
+    <header>
+      <h1>BookGrid</h1>
+      <p class="subtitle">Turn your 2025 reading list into an image-only bookshelf grid to easily share. 
+</p>
+    </header>
+    
+    <div class="input-section">
+      <h2>Paste Your Book List</h2>
+      <p>Enter one book per line with the title and author.</p>
+      <textarea id="bookInput" placeholder="Example: 
 Nothing to See Here by Kevin Wilson
-Atmosphere by Taylor Jenkins Reid
-The History of Sound by Ben Shattuck"></textarea>
-
-      <div class="controls">
-        <button class="primary" id="fetchBtn">Find Covers</button>
-        <button class="secondary" id="clearBtn">Clear</button>
+Martyr! by Kaveh Akbar
+Atmosphere by Taylor Jenkins Reid"></textarea>
+      
+      <input 
+        type="text" 
+        id="customTitle" 
+        class="custom-title-input" 
+        placeholder="Optional: Add a custom title for your grid (e.g., 'My 2025 Reading List')"
+      >
+      
+      <button id="generateBtn">Generate Book Grid</button>
+      
+      <div id="progress" class="progress"></div>
+    </div>
+    
+    <div id="outputSection" class="output-section">
+      <div class="instructions">
+        <h3>How to Share Your Grid</h3>
+        <p><strong>Drag to reorder:</strong> Click and drag covers to rearrange them.</p>
+        <p><strong>Screenshot:</strong> Use your device's screenshot tool to capture the grid below.</p>
       </div>
-
-      <div class="status" id="statusText">
-        Paste titles with optional authors. Tap <strong>Find Covers</strong>, drag to reorder, then screenshot.
+      
+      <div class="grid-frame" id="gridFrame">
+        <div id="gridTitle" class="grid-title"></div>
+        <div id="bookGrid" class="book-grid"></div>
       </div>
-
-      <div class="error" id="errorText"></div>
-    </section>
-
-    <!-- BOOK GRID capture area -->
-<section class="story-area" aria-label="Book cover grid">
-  <div class="frame" id="frame">
-    <div class="grid" id="grid"></div>
+    </div>
   </div>
 
-  <p class="below-tip">
-    Tip: Take a screenshot, then crop to the rounded white frame.
-  </p>
-</section>
-
-
-  </main>
-
-
-
-  <footer class="footer">
-    <span>Made by Becca Risa Luna</span>
-  </footer>
-  
-<div class="floating-toggle" id="floatingToggle" hidden>
-  <button class="secondary" id="exitScreenshotBtn" type="button">
-    Exit Screenshot Mode
-  </button>
-</div>
-
-  <script src="./app.js"></script>
+  <!-- Main JavaScript -->
+  <script src="app.js"></script>
 </body>
 </html>
