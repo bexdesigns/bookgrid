@@ -11,7 +11,7 @@ body {
   background: linear-gradient(135deg, #0F2027 0%, ##2C5364 100%);
   min-height: 100vh;
   padding: 20px;
-  color: #333;
+  color: ##203A43;
 }
 
 .container {
@@ -90,7 +90,7 @@ textarea:focus {
 
 button {
   background: linear-gradient(135deg, #0F2027 0%, ##2C5364 100%);
-  color: white;
+  color: black;
   border: none;
   padding: 15px 40px;
   font-size: 1.1rem;
